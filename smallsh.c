@@ -6,7 +6,7 @@
 #include <unistd.h>
   
 int prompt();
-
+int execute(char **cmds,int *forkNow);
 int main(int argc, char *argv[]){
   prompt();
   return 0;
@@ -14,6 +14,7 @@ int main(int argc, char *argv[]){
 
 int prompt(){
   char *getBuf;
+  int forkCount=0;
   size_t buflen = 2048;//for getline
   size_t chars;
   int numChrs;
@@ -22,17 +23,12 @@ int prompt(){
   int cmdsLen=0;//num words in input cmd
   char *cmds[513];
   char cwd[100];
+  int forkNow=0;
   for (i=0;i<513;i++){cmds[i]=NULL;}
   getBuf = (char *)malloc(buflen * sizeof(char));
 
-  /*for( i=0;i<512;i++){
-    cmds[i]= (char *)malloc(30 * sizeof(char));
-    memset(cmds[i],'\0',30);
-    if(cmds[i] ==NULL){
-      perror("Alloc of cmds array failed");
-    }
-  }*/
   while(1){
+    forkNow=0;//reset fork flag
     for (i=0;i<cmdsLen;i++){//reset array and cmdLen
       if(cmds[i] != NULL){
         free(cmds[i]);
@@ -53,12 +49,8 @@ int prompt(){
     char* position = strchr(getBuf, ' ');//check for spaces in string getBuf input
     char* tok;
     char c[2] = " ";
-    //printf("%s getline\n",getBuf);fflush(stdout);
-    /*if (getBuf[0]=='e' && getBuf[1]=='c' && getBuf[2]=='h' && getBuf[3]=='o'){
-      printf("echo!\n");fflush(stdout);
-      }
-    //check for echo cmd and comments first
-    else */if (getBuf[0]=='#'){
+
+    if (getBuf[0]=='#'){
       printf("skipped\n");fflush(stdout);
       continue;
     }
@@ -66,11 +58,7 @@ int prompt(){
     else if(( strcmp(getBuf,"exit")==0)){//check for exit (end child processes later)
       printf("exiting");fflush(stdout);
       free(getBuf);  
-      /*for (i=0;i<512;i++){
-        free(cmds[i]);
-        cmds[i] =NULL;
-      }*/
-  
+
       return(0);//add in exit closing bg processes
     }
     else if( strcmp(getBuf,"cd")==0){//check for cd
@@ -78,6 +66,7 @@ int prompt(){
       chdir(getenv("HOME"));//go home
       if(getcwd(cwd,sizeof(cwd)) != NULL){
       printf("cwd= %s\n",cwd);fflush(stdout);
+      continue;
       }
     }
     else if (strcmp(getBuf,"status")==0){
@@ -103,25 +92,59 @@ int prompt(){
       printf("cmds =  %d\n",cmdsLen);fflush(stdout);
       for (i=0;i<cmdsLen;i++){printf("%s    %d\n", cmds[i],i);fflush(stdout);}
     }
-    if( cmds[0] !=NULL && strcmp(cmds[0] ,"cd")==0){//more commands after cd (separate if than from above)
+    else if(position == NULL){//put getBuf into cmd[0]
+      cmds[i]= (char *)malloc(sizeof(getBuf) * sizeof(char));
+      if(cmds[i] ==NULL){
+        perror("Alloc of cmds array failed");
+      }
+        memset(cmds[i],'\0',sizeof(tok));
+        strcpy(cmds[i],getBuf);
+    }
+
+    if( position!=NULL && strcmp(cmds[0] ,"cd")==0){//more commands after cd (separate if than from above)
      // printf("abtchdir  %s",cmds[1]);fflush(stdout);
       if(chdir(cmds[1])!=0){perror("chdir failed");}//go to new dir     
       if(getcwd(cwd,sizeof(cwd)) != NULL){
         printf("cwd= %s\n",cwd);fflush(stdout);
       }
+      continue;
     }
+    else{//start exec
+      forkCount++;
+      if(forkCount==50){abort();}//avoid forkbomb
+      forkNow=1;
+      int childExitStatus=execute(cmds,&forkNow);
+      continue;
+    }
+    printf("continue?");fflush(stdout);
 
   }//while 1 outer
   free(getBuf);
   return 0;
 }//main
 
+int execute(char **cmds,int *forkNow){
+  //cited lecture code
+  
+  pid_t spawnPid=-5;
+  int childExitStatus=-5;
 
-
-  //write(1,numChrs, 3);fflush(stdout);
-    //write(1," characters were read.\n",24);fflush(stdout);
-    //write(1,"You typed: ",11);fflush(stdout);
-    //printf("%s\n",getBuf);fflush(stdout);//REMOVE PRINTF
-    //printf("chr= %c\n",getBuf[0]);fflush(stdout);//REMOVE PRINTF
-    //write(1,&getBuf,numChrs);fflush(stdout);
-    //write(1,"\n",1);
+  spawnPid= fork();
+  switch(spawnPid){
+    case -1:  {perror("Hull breach!\n");exit(1);break;}
+    case 0: {
+      if(*forkNow==1){
+        if (execvp(*cmds, cmds)<0){
+          perror("Exec failure");
+          exit(2);break;
+        }
+      }
+      *forkNow=0;//flag safe forking
+    }
+    default:{
+      pid_t actualPid=waitpid(spawnPid, &childExitStatus,0);
+      printf("Parent: %d: Child(%d) terminated\n",getpid(),actualPid);fflush(stdout);
+    }
+  }
+  return childExitStatus;
+}
