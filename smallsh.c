@@ -24,6 +24,7 @@ int prompt(){
   char *cmds[513];
   char cwd[100];
   int forkNow=0;
+  int childExitStatus=-5;
   for (i=0;i<513;i++){cmds[i]=NULL;}
   getBuf = (char *)malloc(buflen * sizeof(char));
 
@@ -70,10 +71,23 @@ int prompt(){
       }
     }
     else if (strcmp(getBuf,"status")==0){
-
+      printf("statusing");fflush(stdout);
+      
+      if(childExitStatus ==-5){printf("exit status 0.\n");fflush(stdout);}
+      else if (WIFEXITED(childExitStatus)){
+        int exitStatus = WEXITSTATUS(childExitStatus);
+        printf("exit status %d.\n",exitStatus);fflush(stdout);
+      }
+      else if (WIFSIGNALED(childExitStatus)){
+        int termSignal = WTERMSIG(childExitStatus);
+        printf("exit signal %d.\n",termSignal);fflush(stdout);
+        continue;
+      }
     }
     else if(position != NULL ){//separate words (found space in str)
       tok = strtok(getBuf,c);
+      printf("strtoking");fflush(stdout);
+
       i=0;//reset i
       //put words in array cmds separated by ' ' spaces
       while(tok !=NULL){//put five strings in max
@@ -89,8 +103,8 @@ int prompt(){
         cmdsLen++;
         i++;
       }
-      printf("cmds =  %d\n",cmdsLen);fflush(stdout);
-      for (i=0;i<cmdsLen;i++){printf("%s    %d\n", cmds[i],i);fflush(stdout);}
+      //printf("cmds =  %d\n",cmdsLen);fflush(stdout);
+      //for (i=0;i<cmdsLen;i++){printf("%s    %d\n", cmds[i],i);fflush(stdout);}
     }
     else if(position == NULL){//put getBuf into cmd[0]
       cmds[i]= (char *)malloc(sizeof(getBuf) * sizeof(char));
@@ -102,7 +116,7 @@ int prompt(){
     }
 
     if( position!=NULL && strcmp(cmds[0] ,"cd")==0){//more commands after cd (separate if than from above)
-     // printf("abtchdir  %s",cmds[1]);fflush(stdout);
+      //printf("abtchdir  %s",cmds[1]);fflush(stdout);
       if(chdir(cmds[1])!=0){perror("chdir failed");}//go to new dir     
       if(getcwd(cwd,sizeof(cwd)) != NULL){
         printf("cwd= %s\n",cwd);fflush(stdout);
@@ -110,10 +124,12 @@ int prompt(){
       continue;
     }
     else{//start exec
+      printf("execing");fflush(stdout);
+      
       forkCount++;
       if(forkCount==50){abort();}//avoid forkbomb
       forkNow=1;
-      int childExitStatus=execute(cmds,&forkNow);
+      childExitStatus=execute(cmds,&forkNow);
       continue;
     }
     printf("continue?");fflush(stdout);
@@ -132,7 +148,7 @@ int execute(char **cmds,int *forkNow){
   spawnPid= fork();
   switch(spawnPid){
     case -1:  {perror("Hull breach!\n");exit(1);break;}
-    case 0: {
+    case 0: {//child
       if(*forkNow==1){
         if (execvp(*cmds, cmds)<0){
           perror("Exec failure");
@@ -146,5 +162,6 @@ int execute(char **cmds,int *forkNow){
       printf("Parent: %d: Child(%d) terminated\n",getpid(),actualPid);fflush(stdout);
     }
   }
+
   return childExitStatus;
 }
