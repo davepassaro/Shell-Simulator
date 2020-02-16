@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
-  
+#include <fcntl.h>
 int prompt();
 int execute(char **cmds,int *forkNow);
 int main(int argc, char *argv[]){
@@ -48,6 +48,7 @@ int prompt(){
     getBuf[strcspn(getBuf, "\n")] = '\0';//cited lecture ########
     //strcpy(cmds[0],getBuf);
     char* position = strchr(getBuf, ' ');//check for spaces in string getBuf input
+    //printf("pos = %s",position);fflush(stdout);
     char* tok;
     char c[2] = " ";
 
@@ -81,12 +82,13 @@ int prompt(){
       else if (WIFSIGNALED(childExitStatus)){
         int termSignal = WTERMSIG(childExitStatus);
         printf("exit signal %d.\n",termSignal);fflush(stdout);
-        continue;
       }
+      continue;
+
     }
     else if(position != NULL ){//separate words (found space in str)
       tok = strtok(getBuf,c);
-      printf("strtoking");fflush(stdout);
+      printf("   strtoking   ");fflush(stdout);
 
       i=0;//reset i
       //put words in array cmds separated by ' ' spaces
@@ -107,12 +109,13 @@ int prompt(){
       //for (i=0;i<cmdsLen;i++){printf("%s    %d\n", cmds[i],i);fflush(stdout);}
     }
     else if(position == NULL){//put getBuf into cmd[0]
-      cmds[i]= (char *)malloc(sizeof(getBuf) * sizeof(char));
-      if(cmds[i] ==NULL){
+      printf("one word nonbuiltin\n");fflush(stdout);
+      cmds[0]= (char *)malloc(sizeof(getBuf) * sizeof(char));
+      if(cmds[0] ==NULL){
         perror("Alloc of cmds array failed");
       }
-        memset(cmds[i],'\0',sizeof(tok));
-        strcpy(cmds[i],getBuf);
+        memset(cmds[0],'\0',sizeof(tok));
+        strcpy(cmds[0],getBuf);
     }
 
     if( position!=NULL && strcmp(cmds[0] ,"cd")==0){//more commands after cd (separate if than from above)
@@ -124,7 +127,7 @@ int prompt(){
       continue;
     }
     else{//start exec
-      printf("execing");fflush(stdout);
+      printf("   execing   ");fflush(stdout);
       
       forkCount++;
       if(forkCount==50){abort();}//avoid forkbomb
@@ -139,24 +142,97 @@ int prompt(){
   return 0;
 }//main
 
+
+
+
 int execute(char **cmds,int *forkNow){
   //cited lecture code
-  
+  int j=0;
+  int i=0;
   pid_t spawnPid=-5;
   int childExitStatus=-5;
-
+  int inpIdx=100;
+  int outIdx = 100;
+ // printf("   about to enter redirect\n");fflush(stdout);
+  //while(cmds[i]!=NULL){printf("%s    %d\n", cmds[i],i);fflush(stdout);i++;}
   spawnPid= fork();
+
   switch(spawnPid){
     case -1:  {perror("Hull breach!\n");exit(1);break;}
     case 0: {//child
+     // i=0;while(cmds[i]!=NULL){printf("%s    %d\n", cmds[i],i);fflush(stdout);i++;}
+      i=0;
+      while(cmds[i] != NULL){//will be null at end of values
+       // printf("%s found at i=%d",cmds[i],i);fflush(stdout);
+
+        if(strcmp(cmds[i], ">")==0){//look for output redirect
+          //printf("\n%s file to open\n",cmds[i+1]);fflush(stdout);
+          outIdx = i;
+          int targetFD = open(cmds[i+1], O_WRONLY | O_CREAT | O_TRUNC, 0644);//Write only
+          if(targetFD== -1){
+            printf("ERROR file not opened");fflush(stdout);
+            childExitStatus=1;
+            //return 1;
+          }else{
+           // printf(" file open suc    ");fflush(stdout);
+          
+            int result = dup2(targetFD,1);
+            if(result == -1){
+              perror("ERROR dup2() failed");//fflush(stdout);
+              //exit(2);
+            }
+          }
+        }
+        else if(strcmp(cmds[i], "<")==0){//look forinput redirect
+          printf("%s file to input",cmds[i+1]);fflush(stdout);
+          inpIdx = i;
+          int targetFD = open(cmds[i+1], O_RDONLY , 0644);//read only #$%(*&#$(*&#$(*&#$()))) change back!!!!
+          if(targetFD== -1){
+            printf("ERROR file not opened");fflush(stdout);
+            //return 1;
+          }
+          else{
+            //printf(" file open suc");fflush(stdout);
+          
+            int result= dup2(targetFD,0);
+            if(result == -1){
+              printf("ERROR dup2() failed");fflush(stdout);
+              //return 1;
+            }
+          }
+        }
+       // printf("\ninpIdx = %d     outIdx = %d   i=%d\n",inpIdx,outIdx,i);fflush(stdout);
+        i++;
+      }//while cmds !=null
+      if(inpIdx < outIdx ){
+        //printf("inpIdx=%d > outIdx= %d",inpIdx, outIdx);fflush(stdout);
+        j=inpIdx;
+        while (cmds[j] != NULL){
+          free(cmds[j]);
+          cmds[j]=NULL;
+          j++;
+        }
+      }
+      else if (inpIdx > outIdx ){
+        //printf("inpIdx=%d < outIdx=%d",inpIdx,outIdx);fflush(stdout);
+        j=outIdx;
+        while (cmds[j] != NULL){
+          free(cmds[j]);
+          cmds[j]=NULL;
+          j++;
+        }
+      }
       if(*forkNow==1){
+       // printf("    actual exec  ->new cmds ");fflush(stdout);
+        i=0;
+        //while(cmds[i]!=NULL){printf("\n2---%s    %d\n", cmds[i],i);fflush(stdout);i++;}
         if (execvp(*cmds, cmds)<0){
           perror("Exec failure");
           exit(2);break;
         }
       }
       *forkNow=0;//flag safe forking
-    }
+    }//case 0
     default:{
       pid_t actualPid=waitpid(spawnPid, &childExitStatus,0);
       printf("Parent: %d: Child(%d) terminated\n",getpid(),actualPid);fflush(stdout);
