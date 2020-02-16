@@ -30,6 +30,7 @@ int prompt(){
 
   while(1){
     forkNow=0;//reset fork flag
+    
     for (i=0;i<cmdsLen;i++){//reset array and cmdLen
       if(cmds[i] != NULL){
         free(cmds[i]);
@@ -51,42 +52,7 @@ int prompt(){
     //printf("pos = %s",position);fflush(stdout);
     char* tok;
     char c[2] = " ";
-
-    if (getBuf[0]=='#'){
-      printf("skipped\n");fflush(stdout);
-      continue;
-    }
-
-    else if(( strcmp(getBuf,"exit")==0)){//check for exit (end child processes later)
-      printf("exiting");fflush(stdout);
-      free(getBuf);  
-
-      return(0);//add in exit closing bg processes
-    }
-    else if( strcmp(getBuf,"cd")==0){//check for cd
-      printf("cding");fflush(stdout);
-      chdir(getenv("HOME"));//go home
-      if(getcwd(cwd,sizeof(cwd)) != NULL){
-      printf("cwd= %s\n",cwd);fflush(stdout);
-      continue;
-      }
-    }
-    else if (strcmp(getBuf,"status")==0){
-      printf("statusing");fflush(stdout);
-      
-      if(childExitStatus ==-5){printf("exit status 0.\n");fflush(stdout);}
-      else if (WIFEXITED(childExitStatus)){
-        int exitStatus = WEXITSTATUS(childExitStatus);
-        printf("exit status %d.\n",exitStatus);fflush(stdout);
-      }
-      else if (WIFSIGNALED(childExitStatus)){
-        int termSignal = WTERMSIG(childExitStatus);
-        printf("exit signal %d.\n",termSignal);fflush(stdout);
-      }
-      continue;
-
-    }
-    else if(position != NULL ){//separate words (found space in str)
+    if(position != NULL ){//separate words (found space in str)
       tok = strtok(getBuf,c);
       printf("   strtoking   ");fflush(stdout);
 
@@ -105,8 +71,6 @@ int prompt(){
         cmdsLen++;
         i++;
       }
-      //printf("cmds =  %d\n",cmdsLen);fflush(stdout);
-      //for (i=0;i<cmdsLen;i++){printf("%s    %d\n", cmds[i],i);fflush(stdout);}
     }
     else if(position == NULL){//put getBuf into cmd[0]
       printf("one word nonbuiltin\n");fflush(stdout);
@@ -118,8 +82,54 @@ int prompt(){
         strcpy(cmds[0],getBuf);
     }
 
-    if( position!=NULL && strcmp(cmds[0] ,"cd")==0){//more commands after cd (separate if than from above)
-      //printf("abtchdir  %s",cmds[1]);fflush(stdout);
+    if (getBuf[0]=='#'){
+      printf("skip\n");fflush(stdout);
+      continue;
+    }
+
+    else if(( strcmp(getBuf,"exit")==0) ||(strcmp (cmds[0],"exit")==0 && strcmp(cmds[1],"&")==0)){//check for exit (end child processes later)
+      printf("exiting");fflush(stdout);
+      free(getBuf);  
+      for (i=0;i<cmdsLen;i++){//reset array and cmdLen
+      if(cmds[i] != NULL){
+        free(cmds[i]);
+        cmds[i] =NULL;
+        }
+      }
+      return(0);//add in exit closing bg processes
+    }
+    else if((strcmp(cmds[0],"cd")==0 && position == NULL)|| (strcmp (cmds[0],"cd") ==0 && strcmp(cmds[1],"&")==0)){//check for cd
+      if((strcmp(getBuf,"cd")==0)){
+      printf("cding");fflush(stdout);}
+      chdir(getenv("HOME"));//go home
+      if(getcwd(cwd,sizeof(cwd)) != NULL){
+      printf("cwd= %s\n",cwd);fflush(stdout);
+      continue;
+      }
+    }
+    else if ((strcmp(getBuf,"status")==0 ||(strcmp (cmds[0],"exit")==0 && strcmp(cmds[1],"&")==0))){
+      printf("statusing");fflush(stdout);
+      
+      if(childExitStatus ==-5){printf("exit status 0.\n");fflush(stdout);}
+      else if (WIFEXITED(childExitStatus)){
+        int exitStatus = WEXITSTATUS(childExitStatus);
+        printf("exit status %d.\n",exitStatus);fflush(stdout);
+      }
+      else if (WIFSIGNALED(childExitStatus)){
+        int termSignal = WTERMSIG(childExitStatus);
+        printf("exit signal %d.\n",termSignal);fflush(stdout);
+      }
+      continue;
+
+    }
+
+      //printf("cmds =  %d\n",cmdsLen);fflush(stdout);
+      for (i=0;i<cmdsLen;i++){printf("%s    %d\n", cmds[i],i);fflush(stdout);}
+    
+
+
+    if( position!=NULL && strcmp(cmds[0] ,"cd")==0 && strcmp (cmds[1],"&")!=0){//more commands after cd (separate if than from above)
+      printf("dif dir  %s",cmds[1]);fflush(stdout);
       if(chdir(cmds[1])!=0){perror("chdir failed");}//go to new dir     
       if(getcwd(cwd,sizeof(cwd)) != NULL){
         printf("cwd= %s\n",cwd);fflush(stdout);
@@ -127,7 +137,7 @@ int prompt(){
       continue;
     }
     else{//start exec
-      printf("   execing   ");fflush(stdout);
+      //printf("   execing   ");fflush(stdout);
       
       forkCount++;
       if(forkCount==50){abort();}//avoid forkbomb
@@ -172,7 +182,7 @@ int execute(char **cmds,int *forkNow){
           if(targetFD== -1){
             printf("ERROR file not opened");fflush(stdout);
             childExitStatus=1;
-            //return 1;
+            return 1;
           }else{
            // printf(" file open suc    ");fflush(stdout);
           
@@ -184,7 +194,7 @@ int execute(char **cmds,int *forkNow){
           }
         }
         else if(strcmp(cmds[i], "<")==0){//look forinput redirect
-          printf("%s file to input",cmds[i+1]);fflush(stdout);
+         // printf("%s file to input",cmds[i+1]);fflush(stdout);
           inpIdx = i;
           int targetFD = open(cmds[i+1], O_RDONLY , 0644);//read only #$%(*&#$(*&#$(*&#$()))) change back!!!!
           if(targetFD== -1){
@@ -235,7 +245,7 @@ int execute(char **cmds,int *forkNow){
     }//case 0
     default:{
       pid_t actualPid=waitpid(spawnPid, &childExitStatus,0);
-      printf("Parent: %d: Child(%d) terminated\n",getpid(),actualPid);fflush(stdout);
+      //printf("Parent: %d: Child(%d) terminated\n",getpid(),actualPid);fflush(stdout);
     }
   }
 
