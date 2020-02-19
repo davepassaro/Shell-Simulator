@@ -10,6 +10,8 @@
 int prompt();
 int execute(char **cmds,int *forkNow,pid_t *pids);
 void shift(pid_t *pids, int idx);
+int checkPids(int *pids);
+void checkStatus(int child);
 
 
 
@@ -119,16 +121,7 @@ int prompt(){
     }
     else if ((strcmp(getBuf,"status")==0 ||(strcmp (cmds[0],"exit")==0 && strcmp(cmds[1],"&")==0))){
       //printf("statusing");fflush(stdout);
-      
-      if(childExitStatus ==-5){printf("exit status 0.\n");fflush(stdout);}
-      else if (WIFEXITED(childExitStatus)){
-        int exitStatus = WEXITSTATUS(childExitStatus);
-        printf("exit status %d.\n",exitStatus);fflush(stdout);
-      }
-      else if (WIFSIGNALED(childExitStatus)){
-        int termSignal = WTERMSIG(childExitStatus);
-        printf("exit signal %d.\n",termSignal);fflush(stdout);
-      }
+      checkStatus(childExitStatus);
       continue;
 
     }
@@ -153,16 +146,45 @@ int prompt(){
       if(forkCount==50){abort();}//avoid forkbomb
       forkNow=1;
       childExitStatus=execute(cmds,&forkNow,pids);
+      printf("here2");fflush(stdout);
+
       continue;
     }
     printf("continue?");fflush(stdout);
 
-  }//while 1 outer
+         //actualPid=waitpid(-1, &childExitStatus,WNOHANG);
+  }//while 1 outer      
   free(getBuf);
   return 0;
 }//main
 
-
+void checkStatus(int childExitStatus){
+  if(childExitStatus ==-5){printf("exit status 0.\n");fflush(stdout);}
+  else if (WIFEXITED(childExitStatus)){
+    int exitStatus = WEXITSTATUS(childExitStatus);
+    printf("exit value %d.\n",exitStatus);fflush(stdout);
+  }
+  else if (WIFSIGNALED(childExitStatus)){
+    int termSignal = WTERMSIG(childExitStatus);
+    printf("terminated by signal %d.\n",termSignal);fflush(stdout);
+  }
+}
+int checkPids(int *pids){
+  int i=0;
+ // int reports[30];
+  int stat = -5;
+  int childExitStatus=-5;
+  pid_t childPID_actual;//code cited lecture
+  //for (i=0;i<30;i++){reports[i]= NULL;})
+  while(pids[i] != NULL){
+    childPID_actual = waitpid(pids[i],&childExitStatus,WNOHANG);
+    if (childPID_actual != 0){
+      printf("Background pid %d is done: ");
+      checkStatus(childExitStatus);
+      shift(pids, i);
+    }
+  }
+}
 void shift(int *pids, int idx){
   while(pids[idx+1] != NULL){
     pids[idx] = pids[idx+1];
@@ -174,11 +196,13 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
   int j=0;
   int i=0;
   int l=0;
+  pid_t actualPid;
   int bg = 0;
   pid_t spawnPid=-5;
   int childExitStatus=-5;
   int inpIdx=100;
   int outIdx = 100;
+  //for(i=0;i<30;i++){}
   //printf("   about to enter redirect\n");fflush(stdout);
   //while(cmds[i]!=NULL){printf("%s    %d\n", cmds[i],i);fflush(stdout);i++;}
   while(cmds[l] != NULL){ // check for bg process before deleting commands
@@ -187,6 +211,15 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
       printf(" first bg ");fflush(stdout);
       free(cmds[l]);
       cmds[l] = NULL; 
+      /*int result = dup2(targetFD,1);
+      if(result == -1){
+        perror("ERROR dup2() failed\n");//fflush(stdout);
+        //exit(2);
+      }int result = dup2(targetFD,1);
+      if(result == -1){
+        perror("ERROR dup2() failed\n");//fflush(stdout);
+        //exit(2);
+      }*/
     }
     l++;
   }
@@ -271,32 +304,40 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
         }
       }
       *forkNow=0;//flag safe forking
+      //exit(0);
     }//case 0
     default:{
       if(bg==0){
-        pid_t actualPid=waitpid(spawnPid, &childExitStatus,0);
+         actualPid=waitpid(spawnPid, &childExitStatus,0);
         printf("Parent: %d: Child(%d) terminated\n",getpid(),actualPid);fflush(stdout);
       }
       else if(bg == 1){
-        pid_t actualPid=waitpid(spawnPid, &childExitStatus,0);
-        i=0;
-        printf(" bg ");fflush(stdout);
-        if(pids[0] == NULL){
-          pids[0]=actualPid;      
-          printf("Child(%d) is %d\n",actualPid, pids[i]);fflush(stdout);
+        //actualPid=waitpid(-1, &childExitStatus,WNOHANG);
+        //printf(" bg ");fflush(stdout);
+        if(pids[0] == NULL){//first process start arr
+          pids[0]=spawnPid;      
+          printf("Background pid is (%d)\n",spawnPid);fflush(stdout);
         }
-        else{
+        else{//not first process
+          i=0;
           while(pids[i] != NULL){
             if(pids[i+1] == NULL){
-              pids[i] = actualPid;
-              printf("Child(%d) is %d\n",actualPid, pids[i]);fflush(stdout);
+              pids[i+1] = spawnPid;
+              printf("2Background pid is (%d) i= %d\n",spawnPid,i);fflush(stdout);
+              break;
             }
-          i++;
+            i++;
           }
         }
       }
+      i=0;
+      while(pids[i] != NULL){
+        printf("Child i= %d is %d\n",i, pids[i]);fflush(stdout);
+        i++;
+      }
     }
   }
-
-  return childExitStatus;
+  if(bg == 0){
+  return childExitStatus;}
+  printf("here1");fflush(stdout);
 }
