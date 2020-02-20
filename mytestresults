@@ -1,12 +1,11 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 36086
+  Grading Script PID: 31371
   Note: your smallsh will report a different PID when evaluating $$
 :BEGINNING TEST SCRIPT
 :
 :--------------------
 :Using comment (5 points if only next prompt is displayed next)
-:
-:
+::
 :
 :--------------------
 :ls (10 points for returning dir contents)
@@ -50,12 +49,12 @@ test
 :
 :--------------------
 :test -f badfile (10 points for returning error value of 1, note extraneous &)
-::Exec failure: No such file or directory
+::exit value 1.
 :
 :
 :--------------------
 :wc in badfile (10 points for returning text error)
-:ERROR file not opened   0    0    0
+:ERROR file not opened
 :
 :
 :--------------------
@@ -64,108 +63,66 @@ test
 :
 :
 :--------------------
-:./p3testscript: line 110: 36087 Aborted                 (core dumped) ./smallsh  <<'___EOF___'
-echo BEGINNING TEST SCRIPT
-echo
-echo --------------------
-echo Using comment (5 points if only next prompt is displayed next)
-#THIS COMMENT SHOULD DO NOTHING
-echo
-echo
-echo --------------------
-echo ls (10 points for returning dir contents)
-ls
-echo
-echo
-echo --------------------
-echo ls out junk
-ls > junk
-echo
-echo
-echo --------------------
-echo cat junk (15 points for correctly returning contents of junk)
-cat junk
-echo
-echo
-echo --------------------
-echo wc in junk (15 points for returning correct numbers from wc)
-wc < junk
-echo
-echo
-echo --------------------
-echo wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
-wc < junk > junk2
-cat junk2
-echo
-echo
-echo --------------------
-echo test -f badfile (10 points for returning error value of 1, note extraneous &)
-test -f badfile
-status &
-echo
-echo
-echo --------------------
-echo wc in badfile (10 points for returning text error)
-wc < badfile
-echo
-echo
-echo --------------------
-echo badfile (10 points for returning text error)
-badfile
-echo
-echo
-echo --------------------
-echo sleep 100 background (10 points for returning process ID of sleeper)
-sleep 100 &
-echo
-echo
-echo --------------------
-echo pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
-echo (Ignore message about Operation Not Permitted)
-pkill sleep
-echo
-echo
-echo --------------------
-echo sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-sleep 1 &
-sleep 1
-echo
-echo
-echo --------------------
-echo pwd
-pwd
-echo
-echo
-echo --------------------
-echo cd
-cd
-echo
-echo
-echo --------------------
-echo pwd (10 points for being in the HOME dir)
-pwd
-echo
-echo
-echo --------------------
-echo mkdir testdir$$
-mkdir testdir$$
-echo
-echo
-echo --------------------
-echo cd testdir$$
-cd testdir$$
-echo
-echo
-echo --------------------
-echo pwd (5 points for being in the newly created dir)
-pwd
-echo --------------------
-echo Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
-kill -SIGTSTP $$
-date
-sleep 5 &
-date
-kill -SIGTSTP $$
-exit
-___EOF___
-
+:sleep 100 background (10 points for returning process ID of sleeper)
+:Background pid is (31422)
+:
+:
+:--------------------
+:pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
+:(Ignore message about Operation Not Permitted)
+:pkill: killing pid 30849 failed: Operation not permitted
+pkill: killing pid 30951 failed: Operation not permitted
+pkill: killing pid 30959 failed: Operation not permitted
+pkill: killing pid 31021 failed: Operation not permitted
+pkill: killing pid 31191 failed: Operation not permitted
+pkill: killing pid 31269 failed: Operation not permitted
+pkill: killing pid 31272 failed: Operation not permitted
+pkill: killing pid 31280 failed: Operation not permitted
+pkill: killing pid 31345 failed: Operation not permitted
+pkill: killing pid 31354 failed: Operation not permitted
+Background pid 31422 is done: terminated by signal 15.
+:
+:
+:--------------------
+:sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
+:Background pid is (31434)
+:Background pid 31434 is done: exit value 0.
+:
+:
+:--------------------
+:pwd
+:/nfs/stak/users/passarod/344/smallsh
+:
+:
+:--------------------
+:cd
+:cwd= /nfs/stak/users/passarod
+:
+:
+:--------------------
+:pwd (10 points for being in the HOME dir)
+:/nfs/stak/users/passarod
+:
+:
+:--------------------
+:mkdir testdir$$
+::
+:
+:--------------------
+:cd testdir$$
+:cwd= /nfs/stak/users/passarod/testdir$$
+:
+:
+:--------------------
+:pwd (5 points for being in the newly created dir)
+:/nfs/stak/users/passarod/testdir$$
+:--------------------
+:Background pid is (31473)
+:Testing foreground-only mode (20 points for entry
+kill: cannot find process "$$"
+Background pid 31473 is done: exit value 0.
+:Wed Feb 19 16:46:13 PST 2020
+:Background pid is (31477)
+:Wed Feb 19 16:46:13 PST 2020
+:kill: cannot find process "$$"
+:
