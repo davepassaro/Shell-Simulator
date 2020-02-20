@@ -1,3 +1,12 @@
+/*to do 
+1  redir bg
+2 $$
+3 signals 
+4 kill at exit  
+5 getline (and wait ) interruption restart
+6 open permissions*/ 
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -215,6 +224,7 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
   //cited lecture code
   int j=0;
   int i=0;
+  int result=-5;
   int l=0;
   pid_t actualPid;
   int bg = 0;
@@ -225,34 +235,41 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
   //for(i=0;i<30;i++){}
   //printf("   about to enter redirect\n");fflush(stdout);
   //while(cmds[i]!=NULL){printf("%s    %d\n", cmds[i],i);fflush(stdout);i++;}
+ 
+  spawnPid= fork();
+  l=0;
   while(cmds[l] != NULL){ // check for bg process before deleting commands
     if (strcmp(cmds[l],"&") == 0){
       bg = 1;
       //printf(" first bg ");fflush(stdout);
       free(cmds[l]);
       cmds[l] = NULL; 
-      /*int result = dup2(targetFD,1);
-      if(result == -1){
-        perror("ERROR dup2() failed\n");//fflush(stdout);
-        //exit(2);
-      }int result = dup2(targetFD,1);
-      if(result == -1){
-        perror("ERROR dup2() failed\n");//fflush(stdout);
-        //exit(2);
-      }*/
+
     }
     l++;
   }
-  spawnPid= fork();
-
   switch(spawnPid){
     case -1:  {perror("Hull breach!\n");exit(1);break;}
     case 0: {//child
      // i=0;while(cmds[i]!=NULL){printf("%s    %d\n", cmds[i],i);fflush(stdout);i++;}
+
       i=0;
       while(cmds[i] != NULL){//will be null at end of values
        // printf("%s found at i=%d",cmds[i],i);fflush(stdout);
-
+        if(bg==1){
+          int targetFD = open("/dev/null", O_WRONLY );//Write only
+          result = dup2(targetFD,1);
+          if(result == -1){
+            perror("ERROR dup2( , 1) failed\n");//fflush(stdout);
+            //exit(2);
+          } 
+          int targetFD2 = open("/dev/null", O_RDONLY );
+          result = dup2(targetFD2,2);
+          if(result == -1){
+            perror("ERROR dup2( , 2) failed\n");//fflush(stdout);
+            //exit(2);
+          }
+        }
         if(strcmp(cmds[i], ">")==0){//look for output redirect
           //printf("\n%s file to open\n",cmds[i+1]);fflush(stdout);
           outIdx = i;
@@ -264,7 +281,7 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
           }else{
            // printf(" file open suc    ");fflush(stdout);
           
-            int result = dup2(targetFD,1);
+            result = dup2(targetFD,1);
             if(result == -1){
               perror("ERROR dup2() failed\n");//fflush(stdout);
               //exit(2);
@@ -282,7 +299,7 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
           else{
             //printf(" file open suc");fflush(stdout);
           
-            int result= dup2(targetFD,0);
+            result= dup2(targetFD,0);
             if(result == -1){
               printf("ERROR dup2() failed\n");fflush(stdout);
               //return 1;

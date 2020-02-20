@@ -1,5 +1,5 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 31371
+  Grading Script PID: 8673
   Note: your smallsh will report a different PID when evaluating $$
 :BEGINNING TEST SCRIPT
 :
@@ -64,30 +64,27 @@ test
 :
 :--------------------
 :sleep 100 background (10 points for returning process ID of sleeper)
-:Background pid is (31422)
+:Background pid is (8729)
 :
 :
 :--------------------
 :pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 :(Ignore message about Operation Not Permitted)
-:pkill: killing pid 30849 failed: Operation not permitted
-pkill: killing pid 30951 failed: Operation not permitted
-pkill: killing pid 30959 failed: Operation not permitted
-pkill: killing pid 31021 failed: Operation not permitted
-pkill: killing pid 31191 failed: Operation not permitted
-pkill: killing pid 31269 failed: Operation not permitted
-pkill: killing pid 31272 failed: Operation not permitted
-pkill: killing pid 31280 failed: Operation not permitted
-pkill: killing pid 31345 failed: Operation not permitted
-pkill: killing pid 31354 failed: Operation not permitted
-Background pid 31422 is done: terminated by signal 15.
+:pkill: killing pid 1712 failed: Operation not permitted
+pkill: killing pid 2953 failed: Operation not permitted
+pkill: killing pid 3883 failed: Operation not permitted
+pkill: killing pid 4390 failed: Operation not permitted
+pkill: killing pid 7437 failed: Operation not permitted
+pkill: killing pid 7777 failed: Operation not permitted
+pkill: killing pid 8089 failed: Operation not permitted
+Background pid 8729 is done: terminated by signal 15.
 :
 :
 :--------------------
 :sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-:Background pid is (31434)
-:Background pid 31434 is done: exit value 0.
-:
+:Background pid is (8744)
+::
+Background pid 8744 is done: exit value 0.
 :
 :--------------------
 :pwd
@@ -106,7 +103,8 @@ Background pid 31422 is done: terminated by signal 15.
 :
 :--------------------
 :mkdir testdir$$
-::
+:mkdir: cannot create directory ‘testdir$$’: File exists
+:
 :
 :--------------------
 :cd testdir$$
@@ -117,12 +115,11 @@ Background pid 31422 is done: terminated by signal 15.
 :pwd (5 points for being in the newly created dir)
 :/nfs/stak/users/passarod/testdir$$
 :--------------------
-:Background pid is (31473)
-:Testing foreground-only mode (20 points for entry
-kill: cannot find process "$$"
-Background pid 31473 is done: exit value 0.
-:Wed Feb 19 16:46:13 PST 2020
-:Background pid is (31477)
-:Wed Feb 19 16:46:13 PST 2020
+:Background pid is (8815)
+:kill: cannot find process "$$"
+Background pid 8815 is done: exit value 0.
+:Thu Feb 20 13:58:48 PST 2020
+:Background pid is (8818)
+:Thu Feb 20 13:58:48 PST 2020
 :kill: cannot find process "$$"
 :
