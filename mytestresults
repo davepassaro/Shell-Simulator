@@ -1,5 +1,5 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 8673
+  Grading Script PID: 4022
   Note: your smallsh will report a different PID when evaluating $$
 :BEGINNING TEST SCRIPT
 :
@@ -64,27 +64,29 @@ test
 :
 :--------------------
 :sleep 100 background (10 points for returning process ID of sleeper)
-:Background pid is (8729)
+:Background pid is (4074)
 :
 :
 :--------------------
 :pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 :(Ignore message about Operation Not Permitted)
-:pkill: killing pid 1712 failed: Operation not permitted
-pkill: killing pid 2953 failed: Operation not permitted
-pkill: killing pid 3883 failed: Operation not permitted
-pkill: killing pid 4390 failed: Operation not permitted
-pkill: killing pid 7437 failed: Operation not permitted
-pkill: killing pid 7777 failed: Operation not permitted
-pkill: killing pid 8089 failed: Operation not permitted
-Background pid 8729 is done: terminated by signal 15.
+:pkill: killing pid 1615 failed: Operation not permitted
+pkill: killing pid 2802 failed: Operation not permitted
+pkill: killing pid 3449 failed: Operation not permitted
+pkill: killing pid 43259 failed: Operation not permitted
+pkill: killing pid 43732 failed: Operation not permitted
+pkill: killing pid 44664 failed: Operation not permitted
+pkill: killing pid 44777 failed: Operation not permitted
+pkill: killing pid 44980 failed: Operation not permitted
+pkill: killing pid 46081 failed: Operation not permitted
+Background pid 4074 is done: terminated by signal 15.
 :
 :
 :--------------------
 :sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-:Background pid is (8744)
+:Background pid is (4088)
 ::
-Background pid 8744 is done: exit value 0.
+Background pid 4088 is done: exit value 0.
 :
 :--------------------
 :pwd
@@ -115,11 +117,11 @@ Background pid 8744 is done: exit value 0.
 :pwd (5 points for being in the newly created dir)
 :/nfs/stak/users/passarod/testdir$$
 :--------------------
-:Background pid is (8815)
+:Background pid is (4145)
 :kill: cannot find process "$$"
-Background pid 8815 is done: exit value 0.
-:Thu Feb 20 13:58:48 PST 2020
-:Background pid is (8818)
-:Thu Feb 20 13:58:48 PST 2020
+Background pid 4145 is done: exit value 0.
+:Thu Feb 20 14:15:43 PST 2020
+:Background pid is (4148)
+:Thu Feb 20 14:15:43 PST 2020
 :kill: cannot find process "$$"
 :

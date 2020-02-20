@@ -1,5 +1,5 @@
 /*to do 
-1  redir bg
+1 kk redir bg
 2 $$
 3 signals 
 4 kill at exit  
@@ -80,11 +80,11 @@ int prompt(){
       //put words in array cmds separated by ' ' spaces
       while(tok !=NULL){//put five strings in max
        // printf(" %s toc\n",tok);fflush(stdout);
-        cmds[i]= (char *)malloc(sizeof(tok) * sizeof(char));
+        cmds[i]= (char *)malloc((100) * sizeof(char));
         if(cmds[i] ==NULL){
           perror("Alloc of cmds array failed");
         }
-        memset(cmds[i],'\0',sizeof(tok));
+        memset(cmds[i],'\0',(100));
         strcpy(cmds[i],tok);
         //printf(" %s \n",cmds[i]);fflush(stdout);
         tok= strtok(NULL, c);
@@ -92,7 +92,28 @@ int prompt(){
         i++;
       }
     }
-    else if(position == NULL){//put getBuf into cmd[0]
+    i=0;
+    while(cmds[i]!= NULL){///cite guidence from https://www.geeksforgeeks.org/c-program-replace-word-text-another-given-word/
+      char *target ="$$";
+      char *p;
+      int w=0;
+      int count=0;
+      int subLen = strlen(target);
+      int oldLen = strlen(cmds[i]);
+      for (w=0;cmds[w]!=0;w++){
+        if(strstr(&cmds[i][w],target)){
+          count++;
+        }
+      }
+      p= (strstr(cmds[i],target))
+      while(*s){
+        if(strstr(cmds[i],target)== s)
+      }
+      if(p){
+
+      }
+    }
+    if(position == NULL){//put getBuf into cmd[0]
      // printf("one word \n");fflush(stdout);
       cmds[0]= (char *)malloc(sizeof(getBuf) * sizeof(char));
       if(cmds[0] ==NULL){
@@ -130,7 +151,7 @@ int prompt(){
       continue;
       }
     }
-    else if ((strcmp(getBuf,"status")==0 ||(strcmp (cmds[0],"exit")==0 && strcmp(cmds[1],"&")==0))){
+    else if ((strcmp(getBuf,"status")==0 ||(strcmp (cmds[0],"status")==0 && strcmp(cmds[1],"&")==0))){
       //printf("statusing");fflush(stdout);
       checkStatus(childExitStatus);//didn't find new finished status so
       checkPids(pids);
