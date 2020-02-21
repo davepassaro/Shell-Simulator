@@ -92,6 +92,16 @@ int prompt(){
         i++;
       }
     }
+    if(position == NULL){//put getBuf into cmd[0]
+     // printf("one word \n");fflush(stdout);
+      cmds[0]= (char *)malloc(sizeof(100) * sizeof(char));
+      if(cmds[0] ==NULL){
+        perror("Alloc of cmds array failed");
+      }
+        memset(cmds[0],'\0',sizeof(100));
+        strcpy(cmds[0],getBuf);
+    }
+    //printf("%s 1",cmds[0]);fflush(stdout);
     i=0;
     while(cmds[i]!= NULL){///cite guidence from https://www.geeksforgeeks.org/c-program-replace-word-text-another-given-word/
       char *target ="$$";
@@ -105,23 +115,64 @@ int prompt(){
           count++;
         }
       }
-      p= (strstr(cmds[i],target))
-      while(*s){
-        if(strstr(cmds[i],target)== s)
-      }
-      if(p){
+     // p= (strstr(cmds[i],target))
+      char string [100];
+      memset(string,'\0',100);
+      w=0;int q = 0;
+   // printf( "   %s 2   ",cmds[0]);fflush(stdout);
 
+      strcpy(string, cmds[i]);
+   // printf( "   %s 3  ",string);fflush(stdout);
+      memset(cmds[i],'\0',100);
+      printf("1st  %s cmds  ",cmds[i]);fflush(stdout);
+
+      char  pidstr [100];
+      snprintf(pidstr,100,"%d",getpid());
+      printf("   %s   pstr   ",pidstr);
+      int pLen = strlen(pidstr); 
+      while(string[q]){
+        printf(" start q=%c ",string[q]);fflush(stdout);
+
+        if(strstr(string,target)== string)//beginning is substring
+        {
+          printf(" 1  ");fflush(stdout);
+
+          strcpy(&cmds[i][w],pidstr);//put in result at front
+          w += pLen;
+          q += 2;
+          count--;
+        }
+        
+        else{
+         // printf(" 2  ");fflush(stdout);
+
+          p=(strstr(&string[q],target));
+         // printf(" p= %c  ",*p);fflush(stdout);
+
+          if(p && (*(p+1)=='$') && (p == (&string[q]))){
+          printf(" 3  ");fflush(stdout);
+            strcat(cmds[i],pidstr);
+            q += 2;
+            w += pLen;
+            printf(" 3 cmds= %s  ",cmds[0]);fflush(stdout);
+
+          }
+          else{
+          printf("   4  ");fflush(stdout);
+
+          cmds[i][w++] = string[q++];//else copy the char
+          }
+        }
+        printf("    %c = c     ",cmds[i][w]);fflush(stdout);
       }
+      cmds[i][w]='\0';
+      printf("  %s cmds  ",cmds[i]);fflush(stdout);
+     // if(p){
+
+      //}
+      i++;
     }
-    if(position == NULL){//put getBuf into cmd[0]
-     // printf("one word \n");fflush(stdout);
-      cmds[0]= (char *)malloc(sizeof(getBuf) * sizeof(char));
-      if(cmds[0] ==NULL){
-        perror("Alloc of cmds array failed");
-      }
-        memset(cmds[0],'\0',sizeof(tok));
-        strcpy(cmds[0],getBuf);
-    }
+
 
     if (getBuf[0]=='#'){
       //printf("skip\n");fflush(stdout);
