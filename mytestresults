@@ -1,5 +1,5 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 4022
+  Grading Script PID: 20777
   Note: your smallsh will report a different PID when evaluating $$
 :BEGINNING TEST SCRIPT
 :
@@ -18,6 +18,7 @@ README.md
 smallsh
 smallsh.c
 test
+test20255
 :
 :
 :--------------------
@@ -35,16 +36,17 @@ README.md
 smallsh
 smallsh.c
 test
+test20255
 :
 :
 :--------------------
 :wc in junk (15 points for returning correct numbers from wc)
-: 9  9 75
+:10 10 85
 :
 :
 :--------------------
 :wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
-:: 9  9 75
+::10 10 85
 :
 :
 :--------------------
@@ -64,29 +66,36 @@ test
 :
 :--------------------
 :sleep 100 background (10 points for returning process ID of sleeper)
-:Background pid is (4074)
+:Background pid is (20958)
 :
 :
 :--------------------
 :pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 :(Ignore message about Operation Not Permitted)
-:pkill: killing pid 1615 failed: Operation not permitted
-pkill: killing pid 2802 failed: Operation not permitted
-pkill: killing pid 3449 failed: Operation not permitted
-pkill: killing pid 43259 failed: Operation not permitted
-pkill: killing pid 43732 failed: Operation not permitted
-pkill: killing pid 44664 failed: Operation not permitted
-pkill: killing pid 44777 failed: Operation not permitted
-pkill: killing pid 44980 failed: Operation not permitted
-pkill: killing pid 46081 failed: Operation not permitted
-Background pid 4074 is done: terminated by signal 15.
+:pkill: killing pid 1210 failed: Operation not permitted
+pkill: killing pid 3662 failed: Operation not permitted
+pkill: killing pid 6487 failed: Operation not permitted
+pkill: killing pid 7598 failed: Operation not permitted
+pkill: killing pid 7650 failed: Operation not permitted
+pkill: killing pid 13202 failed: Operation not permitted
+pkill: killing pid 16858 failed: Operation not permitted
+pkill: killing pid 19935 failed: Operation not permitted
+pkill: killing pid 22741 failed: Operation not permitted
+pkill: killing pid 25955 failed: Operation not permitted
+pkill: killing pid 27157 failed: Operation not permitted
+pkill: killing pid 36789 failed: Operation not permitted
+pkill: killing pid 42268 failed: Operation not permitted
+pkill: killing pid 43118 failed: Operation not permitted
+pkill: killing pid 43926 failed: Operation not permitted
+pkill: killing pid 47125 failed: Operation not permitted
+Background pid 20958 is done: terminated by signal 15.
 :
 :
 :--------------------
 :sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-:Background pid is (4088)
+:Background pid is (21094)
 ::
-Background pid 4088 is done: exit value 0.
+Background pid 21094 is done: exit value 0.
 :
 :--------------------
 :pwd
@@ -117,11 +126,10 @@ Background pid 4088 is done: exit value 0.
 :pwd (5 points for being in the newly created dir)
 :/nfs/stak/users/passarod/testdir$$
 :--------------------
-:Background pid is (4145)
+:Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
 :kill: cannot find process "$$"
-Background pid 4145 is done: exit value 0.
-:Thu Feb 20 14:15:43 PST 2020
-:Background pid is (4148)
-:Thu Feb 20 14:15:43 PST 2020
+:Fri Feb 21 13:46:17 PST 2020
+:Background pid is (22972)
+:Fri Feb 21 13:46:17 PST 2020
 :kill: cannot find process "$$"
 :

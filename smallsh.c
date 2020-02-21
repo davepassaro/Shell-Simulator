@@ -102,7 +102,7 @@ int prompt(){
         strcpy(cmds[0],getBuf);
     }
     //printf("%s 1",cmds[0]);fflush(stdout);
-    i=0;
+   /* i=0;
     while(cmds[i]!= NULL){///cite guidence from https://www.geeksforgeeks.org/c-program-replace-word-text-another-given-word/
       char *target ="$$";
       char *p;
@@ -171,7 +171,7 @@ int prompt(){
 
       //}
       i++;
-    }
+    }*/
 
 
     if (getBuf[0]=='#'){
@@ -311,7 +311,7 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
   spawnPid= fork();
   l=0;
   while(cmds[l] != NULL){ // check for bg process before deleting commands
-    if (strcmp(cmds[l],"&") == 0){
+    if (strcmp(cmds[l],"&" )==0 && cmds[l+1]==NULL){
       bg = 1;
       //printf(" first bg ");fflush(stdout);
       free(cmds[l]);
