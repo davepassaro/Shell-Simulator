@@ -32,10 +32,13 @@ int main(int argc, char *argv[]){
 
 int prompt(){
   char *getBuf;
+  char *target ="$$";
+
   int forkCount=0;
   size_t buflen = 2048;//for getline
   size_t chars;
   int numChrs;
+  int count;//$$ nums
   //int multiWords=0; 
   int i,j,k;
   int cmdsLen=0;//num words in input cmd
@@ -51,12 +54,18 @@ int prompt(){
   while(1){
     forkNow=0;//reset fork flag
     forkCount = 0;
-    for (i=0;i<cmdsLen;i++){//reset array and cmdLen
+   /* for (i=0;i<cmdsLen;i++){//reset array and cmdLen
       if(cmds[i] != NULL){
         free(cmds[i]);
         cmds[i] =NULL;
       }
-    }
+    }*/
+       i=0;
+      while(cmds[i]!=NULL){
+        free(cmds[i]);
+        cmds[i]=NULL;i++;
+        }
+     // p= (strstr(cmds[i],target))
     cmdsLen=0;
     if( getBuf == NULL)
     {
@@ -93,87 +102,103 @@ int prompt(){
       }
     }
     if(position == NULL){//put getBuf into cmd[0]
-     // printf("one word \n");fflush(stdout);
-      cmds[0]= (char *)malloc(sizeof(100) * sizeof(char));
+      printf("one word \n");fflush(stdout);
+      cmds[0]= (char *)malloc( 100* sizeof(char));
       if(cmds[0] ==NULL){
         perror("Alloc of cmds array failed");
       }
+        printf("here1");fflush(stdout);
         memset(cmds[0],'\0',sizeof(100));
         strcpy(cmds[0],getBuf);
+        cmdsLen=1;
     }
-    //printf("%s 1",cmds[0]);fflush(stdout);
-   /* i=0;
-    while(cmds[i]!= NULL){///cite guidence from https://www.geeksforgeeks.org/c-program-replace-word-text-another-given-word/
-      char *target ="$$";
-      char *p;
-      int w=0;
-      int count=0;
-      int subLen = strlen(target);
-      int oldLen = strlen(cmds[i]);
-      for (w=0;cmds[w]!=0;w++){
-        if(strstr(&cmds[i][w],target)){
-          count++;
-        }
+    count=0;
+    for (k=0;cmds[k]!=NULL;k++){
+      if(strstr(cmds[k],target)){
+        count++;
       }
-     // p= (strstr(cmds[i],target))
-      char string [100];
-      memset(string,'\0',100);
-      w=0;int q = 0;
-   // printf( "   %s 2   ",cmds[0]);fflush(stdout);
+    }
+    if (count!=0){
+      i=0;
+      while(cmds[i]!= NULL){///cite guidence from https://www.geeksforgeeks.org/c-program-replace-word-text-another-given-word/
+        char *p;
+        int w=0;
+        count=0;
+        int subLen = strlen(target);
+        int oldLen = strlen(cmds[i]);
+       // for (w=0;cmds[w]!=0;w++){
+         // if(strstr(&cmds[i][w],target)){
+        //    count++;
+       //   }
+      //  }
+      // p= (strstr(cmds[i],target))
+        char string [100];
+        memset(string,'\0',100);
+        int q = 0;
+    // printf( "   %s 2   ",cmds[0]);fflush(stdout);
 
-      strcpy(string, cmds[i]);
-   // printf( "   %s 3  ",string);fflush(stdout);
-      memset(cmds[i],'\0',100);
-      printf("1st  %s cmds  ",cmds[i]);fflush(stdout);
+        strcpy(string, cmds[i]);//copy over original 
+        printf( "   %s string\n",string);fflush(stdout);
+        memset(cmds[i],'\0',100);//clear for result building
+        //printf("1st  %s cmds  ",cmds[i]);fflush(stdout);
 
-      char  pidstr [100];
-      snprintf(pidstr,100,"%d",getpid());
-      printf("   %s   pstr   ",pidstr);
-      int pLen = strlen(pidstr); 
-      while(string[q]){
-        printf(" start q=%c ",string[q]);fflush(stdout);
+        char  pidstr [100];
+        snprintf(pidstr,100,"%d",getpid());
+        //printf("   %s   pstr   ",pidstr);
+        int pLen = strlen(pidstr); 
+        int counterFirst$$ = 0;
+        w=0;
+        char *ptr=string;
+        while(string[q]){
+          //printf(" start q=%c ",string[q]);fflush(stdout);
+          //printf(" 0(w=%d   q =%d, cmds=%s)   ",w,q,cmds[i]);fflush(stdout);
 
-        if(strstr(string,target)== string)//beginning is substring
-        {
+          if(strstr(string,target)== ptr && counterFirst$$==0)//beginning is substring
+          {
+            //printf(" 1 i=%d w=%d cmdsiw %s ",i,w,cmds[i]);fflush(stdout);
           printf(" 1  ");fflush(stdout);
 
-          strcpy(&cmds[i][w],pidstr);//put in result at front
-          w += pLen;
-          q += 2;
-          count--;
-        }
-        
-        else{
-         // printf(" 2  ");fflush(stdout);
-
-          p=(strstr(&string[q],target));
-         // printf(" p= %c  ",*p);fflush(stdout);
-
-          if(p && (*(p+1)=='$') && (p == (&string[q]))){
-          printf(" 3  ");fflush(stdout);
-            strcat(cmds[i],pidstr);
-            q += 2;
+            strcpy(&cmds[i][w],pidstr);//put in result at front
             w += pLen;
-            printf(" 3 cmds= %s  ",cmds[0]);fflush(stdout);
-
+            q += 2;
+            //count--;
+          // printf(" 1( cmds=%s)   ",w,q,cmds[i]);fflush(stdout);
+            //break;
+            counterFirst$$++;
           }
+          
           else{
-          printf("   4  ");fflush(stdout);
+          // printf(" 2  ");fflush(stdout);
 
-          cmds[i][w++] = string[q++];//else copy the char
+            p=(strstr(&string[q],target));
+          // printf(" p= %c  ",*p);fflush(stdout);
+
+            if(p && (*(p+1)=='$') && (p == (&string[q]))){//if pointer p found $ in string and next char is $ (two in row) 
+            printf(" 2  ");fflush(stdout);    // and p points to where we are in string
+              strcat(cmds[i],pidstr);
+              q += 2;
+              w += pLen;
+            // printf(" 3 cmds= %s  ",cmds[0]);fflush(stdout);
+
+            }
+            else{
+            printf("   3  ");fflush(stdout);
+
+            cmds[i][w++] = string[q++];//else copy the char
+            }
           }
+          //printf("    %c = c     ",cmds[i][w]);fflush(stdout);
         }
-        printf("    %c = c     ",cmds[i][w]);fflush(stdout);
+      // cmds[i][w]='\0';
+      // printf("  %s cmds  ",cmds[i]);fflush(stdout);
+      // if(p){
+
+        //}
+        i++;
       }
-      cmds[i][w]='\0';
-      printf("  %s cmds  ",cmds[i]);fflush(stdout);
-     // if(p){
-
-      //}
-      i++;
-    }*/
-
-
+    }
+    i=0;
+    while (cmds[i]!=NULL){printf("cmds= %s\n",cmds[i]);fflush(stdout);i++;}
     if (getBuf[0]=='#'){
       //printf("skip\n");fflush(stdout);
       checkPids(pids);
