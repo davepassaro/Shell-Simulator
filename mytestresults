@@ -1,5 +1,5 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 3903
+  Grading Script PID: 10649
   Note: your smallsh will report a different PID when evaluating $$
 :BEGINNING TEST SCRIPT
 :
@@ -64,33 +64,56 @@ test
 :
 :--------------------
 :sleep 100 background (10 points for returning process ID of sleeper)
-:Background pid is (4066)
+:Background pid is (10751)
 :
 :
 :--------------------
 :pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 :(Ignore message about Operation Not Permitted)
-:pkill: killing pid 1227 failed: Operation not permitted
-pkill: killing pid 5102 failed: Operation not permitted
-pkill: killing pid 9522 failed: Operation not permitted
-pkill: killing pid 13866 failed: Operation not permitted
-pkill: killing pid 15430 failed: Operation not permitted
-pkill: killing pid 20722 failed: Operation not permitted
-pkill: killing pid 21834 failed: Operation not permitted
-pkill: killing pid 24480 failed: Operation not permitted
-pkill: killing pid 32370 failed: Operation not permitted
-pkill: killing pid 34703 failed: Operation not permitted
-pkill: killing pid 35145 failed: Operation not permitted
-pkill: killing pid 39306 failed: Operation not permitted
-pkill: killing pid 45007 failed: Operation not permitted
-Background pid 4066 is done: terminated by signal 15.
+:pkill: killing pid 379 failed: Operation not permitted
+pkill: killing pid 511 failed: Operation not permitted
+pkill: killing pid 1337 failed: Operation not permitted
+pkill: killing pid 4952 failed: Operation not permitted
+pkill: killing pid 6923 failed: Operation not permitted
+pkill: killing pid 7046 failed: Operation not permitted
+pkill: killing pid 8146 failed: Operation not permitted
+pkill: killing pid 8500 failed: Operation not permitted
+pkill: killing pid 8544 failed: Operation not permitted
+pkill: killing pid 9621 failed: Operation not permitted
+pkill: killing pid 10040 failed: Operation not permitted
+pkill: killing pid 10580 failed: Operation not permitted
+pkill: killing pid 12776 failed: Operation not permitted
+pkill: killing pid 12927 failed: Operation not permitted
+pkill: killing pid 15887 failed: Operation not permitted
+pkill: killing pid 18003 failed: Operation not permitted
+pkill: killing pid 18047 failed: Operation not permitted
+pkill: killing pid 18050 failed: Operation not permitted
+pkill: killing pid 18479 failed: Operation not permitted
+pkill: killing pid 20131 failed: Operation not permitted
+pkill: killing pid 20132 failed: Operation not permitted
+pkill: killing pid 25287 failed: Operation not permitted
+pkill: killing pid 27361 failed: Operation not permitted
+pkill: killing pid 27496 failed: Operation not permitted
+pkill: killing pid 29704 failed: Operation not permitted
+pkill: killing pid 30201 failed: Operation not permitted
+pkill: killing pid 30508 failed: Operation not permitted
+pkill: killing pid 37841 failed: Operation not permitted
+pkill: killing pid 37842 failed: Operation not permitted
+pkill: killing pid 38577 failed: Operation not permitted
+pkill: killing pid 38974 failed: Operation not permitted
+pkill: killing pid 41585 failed: Operation not permitted
+pkill: killing pid 46382 failed: Operation not permitted
+pkill: killing pid 46688 failed: Operation not permitted
+pkill: killing pid 47678 failed: Operation not permitted
+pkill: killing pid 49029 failed: Operation not permitted
+Background pid 10751 is done: terminated by signal 15.
 :
 :
 :--------------------
 :sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-:Background pid is (4156)
+:Background pid is (10814)
 ::
-Background pid 4156 is done: exit value 0.
+Background pid 10814 is done: exit value 0.
 :
 :--------------------
 :pwd
@@ -108,23 +131,17 @@ Background pid 4156 is done: exit value 0.
 :
 :
 :--------------------
-:mkdir testdir$$
-:mkdir: cannot create directory ‘testdir$$’: File exists
-:
+:mkdir testdir10654
+::
 :
 :--------------------
-:cd testdir$$
-:cwd= /nfs/stak/users/passarod/testdir$$
+:cd testdir10654
+:cwd= /nfs/stak/users/passarod/testdir10654
 :
 :
 :--------------------
 :pwd (5 points for being in the newly created dir)
-:/nfs/stak/users/passarod/testdir$$
+:/nfs/stak/users/passarod/testdir10654
 :--------------------
 :Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
-:kill: cannot find process "$$"
-:Fri Feb 21 16:53:06 PST 2020
-:Background pid is (5697)
-:Fri Feb 21 16:53:06 PST 2020
-:kill: cannot find process "$$"
 :

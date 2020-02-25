@@ -1,11 +1,12 @@
 /*to do 
 1 kk redir bg
-2 $$
+2 kk $$
 3 signals 
 4 kill at exit  
 5 getline (and wait ) interruption restart
-6 open permissions*/ 
-
+6 open permissions
+ RESTART and the global 
+And to set and an ignore/default in the child */ 
 
 #include <stdio.h>
 #include <string.h>
@@ -21,15 +22,28 @@ int execute(char **cmds,int *forkNow,pid_t *pids);
 void shift(pid_t *pids, int idx);
 int checkPids(int *pids);
 void checkStatus(int child);
-
+void catchSIGINT(int signo);
 
 
 
 int main(int argc, char *argv[]){
+  struct sigaction SIGINT_action = {0};//CiTED Lecture
+  SIGINT_action.sa_handler = SIG_IGN;
+  sigaction(SIGINT, &SIGINT_action,NULL);
+  /*SIGINT_action.sa_handler = catchSIGINT;
+  sigfillset(&SIGINT_action.sa_mask);
+  SIGINT_action.sa_flags = SA_RESTART;
+  sigaction(SIGINT, &SIGINT_action,NULL);*/
+
   prompt();
   return 0;
 }
 
+void catchSIGINT(int signo){
+  char *message = "terminated by signal 2\n";
+ // write(STDOUT_FILENO, message, 23);
+  
+}
 int prompt(){
   char *getBuf;
   char *target ="$$";
@@ -102,12 +116,12 @@ int prompt(){
       }
     }
     if(position == NULL){//put getBuf into cmd[0]
-      printf("one word \n");fflush(stdout);
+      //printf("one word \n");fflush(stdout);
       cmds[0]= (char *)malloc( 100* sizeof(char));
       if(cmds[0] ==NULL){
         perror("Alloc of cmds array failed");
       }
-        printf("here1");fflush(stdout);
+       // printf("here1");fflush(stdout);
         memset(cmds[0],'\0',sizeof(100));
         strcpy(cmds[0],getBuf);
         cmdsLen=1;
@@ -138,7 +152,7 @@ int prompt(){
     // printf( "   %s 2   ",cmds[0]);fflush(stdout);
 
         strcpy(string, cmds[i]);//copy over original 
-        printf( "   %s string\n",string);fflush(stdout);
+       // printf( "   %s string\n",string);fflush(stdout);
         memset(cmds[i],'\0',100);//clear for result building
         //printf("1st  %s cmds  ",cmds[i]);fflush(stdout);
 
@@ -156,7 +170,7 @@ int prompt(){
           if(strstr(string,target)== ptr && counterFirst$$==0)//beginning is substring
           {
             //printf(" 1 i=%d w=%d cmdsiw %s ",i,w,cmds[i]);fflush(stdout);
-          printf(" 1  ");fflush(stdout);
+        //  printf(" 1  ");fflush(stdout);
 
             strcpy(&cmds[i][w],pidstr);//put in result at front
             w += pLen;
@@ -174,7 +188,7 @@ int prompt(){
           // printf(" p= %c  ",*p);fflush(stdout);
 
             if(p && (*(p+1)=='$') && (p == (&string[q]))){//if pointer p found $ in string and next char is $ (two in row) 
-            printf(" 2  ");fflush(stdout);    // and p points to where we are in string
+          //  printf(" 2  ");fflush(stdout);    // and p points to where we are in string
               strcat(cmds[i],pidstr);
               q += 2;
               w += pLen;
@@ -182,7 +196,7 @@ int prompt(){
 
             }
             else{
-            printf("   3  ");fflush(stdout);
+          //  printf("   3  ");fflush(stdout);
 
             cmds[i][w++] = string[q++];//else copy the char
             }
@@ -198,7 +212,7 @@ int prompt(){
       }
     }
     i=0;
-    while (cmds[i]!=NULL){printf("cmds= %s\n",cmds[i]);fflush(stdout);i++;}
+  //  while (cmds[i]!=NULL){printf("cmds= %s\n",cmds[i]);fflush(stdout);i++;}
     if (getBuf[0]=='#'){
       //printf("skip\n");fflush(stdout);
       checkPids(pids);
@@ -258,6 +272,17 @@ int prompt(){
       forkNow=1;
       childExitStatus=execute(cmds,&forkNow,pids);//update childexitstatus
       //printf("here2");fflush(stdout);
+      /*if(childExitStatus ==-5){printf("exit status 0.\n");fflush(stdout);}
+      else if (WIFEXITED(childExitStatus)){
+    int exitStatus = WEXITSTATUS(childExitStatus);
+    printf("exit value %d.\n",exitStatus);fflush(stdout);
+  }
+  else*/
+      if (WIFSIGNALED(childExitStatus)){
+        int termSignal = WTERMSIG(childExitStatus);
+        printf("terminated by signal %d.\n",termSignal);fflush(stdout);
+      }
+
       checkPids(pids);
 
       continue;
@@ -349,7 +374,10 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
     case -1:  {perror("Hull breach!\n");exit(1);break;}
     case 0: {//child
      // i=0;while(cmds[i]!=NULL){printf("%s    %d\n", cmds[i],i);fflush(stdout);i++;}
-
+      //set default sig action
+      struct sigaction SIGINT_action = {0};//CiTED Lecture
+      SIGINT_action.sa_handler = SIG_DFL;
+      sigaction(SIGINT, &SIGINT_action,NULL);
       i=0;
       while(cmds[i] != NULL){//will be null at end of values
        // printf("%s found at i=%d",cmds[i],i);fflush(stdout);
