@@ -4,7 +4,7 @@ Readme!!!
 
 1 kk redir bg
 2 kk $$
-3 signals 
+3 kk signals 
 4 kill at exit  
 5 kk getline (and wait ) interruption restart
 6 open permissions
@@ -243,7 +243,14 @@ int prompt(){
       while(cmds[i]!=NULL){
         free(cmds[i]);
         cmds[i]=NULL;i++;
-        
+      }
+      i=0;
+      while(pids[i]!=NULL){
+        if(pids[i] > 0){
+          kill(pids[i], SIGKILL);
+        }
+        pids[i]=NULL;
+        i++; 
       }
       return(0);//add in exit closing bg processes
     }
@@ -430,7 +437,7 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
         if(strcmp(cmds[i], ">")==0){//look for output redirect
           //printf("\n%s file to open\n",cmds[i+1]);fflush(stdout);
           outIdx = i;
-          int targetFD = open(cmds[i+1], O_WRONLY | O_CREAT | O_TRUNC, 0644);//Write only
+          int targetFD = open(cmds[i+1], O_WRONLY | O_CREAT | O_TRUNC, 0640);//Write only
           if(targetFD== -1){
             printf("ERROR file not opened\n");fflush(stdout);
             childExitStatus=1;
@@ -448,7 +455,7 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
         else if(strcmp(cmds[i], "<")==0){//look forinput redirect
           //printf("%s file to input",cmds[i+1]);fflush(stdout);
           inpIdx = i;
-          int targetFD = open(cmds[i+1], O_RDONLY , 0644);//read only !!!!!!!!!!!!!!!!!!!!!!!change back!!!!!!!!!!!!!!!!!!!!!!!!!
+          int targetFD = open(cmds[i+1], O_RDONLY );//read only !!!!!!!!!!!!!!!!!!!!!!!change back!!!!!!!!!!!!!!!!!!!!!!!!!
           if(targetFD== -1){
             printf("ERROR file not opened\n");fflush(stdout);
             exit(3);
