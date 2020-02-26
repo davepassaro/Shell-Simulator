@@ -1,4 +1,7 @@
 /*to do 
+
+Readme!!!
+
 1 kk redir bg
 2 kk $$
 3 signals 
@@ -498,8 +501,15 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
       //exit(0);
     }//case 0
     default:{
+
       if(bg==0){
-         actualPid=waitpid(spawnPid, &childExitStatus,0);
+        //block sigtstp before wait
+        sigset_t x;
+        sigemptyset (&x);
+        sigaddset(&x, SIGTSTP);
+        sigprocmask(SIG_BLOCK, &x, NULL);
+        actualPid=waitpid(spawnPid, &childExitStatus,0);
+        sigprocmask(SIG_UNBLOCK, &x, NULL);
         //printf("Parent: %d: Child(%d) terminated\n",getpid(),actualPid);fflush(stdout);
       }
       else if(bg == 1){
