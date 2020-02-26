@@ -1,5 +1,5 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 21274
+  Grading Script PID: 20251
   Note: your smallsh will report a different PID when evaluating $$
 :BEGINNING TEST SCRIPT
 :
@@ -9,7 +9,9 @@ PRE-SCRIPT INFO
 :
 :--------------------
 :ls (10 points for returning dir contents)
-:mytestresults
+:junk
+junk2
+mytestresults
 num
 p3testscript
 README.md
@@ -25,6 +27,7 @@ test
 :--------------------
 :cat junk (15 points for correctly returning contents of junk)
 :junk
+junk2
 mytestresults
 num
 p3testscript
@@ -36,12 +39,12 @@ test
 :
 :--------------------
 :wc in junk (15 points for returning correct numbers from wc)
-: 8  8 69
+: 9  9 75
 :
 :
 :--------------------
 :wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
-:: 8  8 69
+:: 9  9 75
 :
 :
 :--------------------
@@ -61,7 +64,7 @@ test
 :
 :--------------------
 :sleep 100 background (10 points for returning process ID of sleeper)
-:Background pid is (21328)
+:Background pid is (20319)
 :
 :
 :--------------------
@@ -69,6 +72,16 @@ test
 :(Ignore message about Operation Not Permitted)
 :pkill: killing pid 12908 failed: Operation not permitted
 pkill: killing pid 15884 failed: Operation not permitted
+pkill: killing pid 18032 failed: Operation not permitted
+pkill: killing pid 18109 failed: Operation not permitted
+pkill: killing pid 18116 failed: Operation not permitted
+pkill: killing pid 18258 failed: Operation not permitted
+pkill: killing pid 18276 failed: Operation not permitted
+pkill: killing pid 18305 failed: Operation not permitted
+pkill: killing pid 18321 failed: Operation not permitted
+pkill: killing pid 18337 failed: Operation not permitted
+pkill: killing pid 18812 failed: Operation not permitted
+pkill: killing pid 18813 failed: Operation not permitted
 pkill: killing pid 18966 failed: Operation not permitted
 pkill: killing pid 19013 failed: Operation not permitted
 pkill: killing pid 19222 failed: Operation not permitted
@@ -80,19 +93,8 @@ pkill: killing pid 19434 failed: Operation not permitted
 pkill: killing pid 19448 failed: Operation not permitted
 pkill: killing pid 19651 failed: Operation not permitted
 pkill: killing pid 19657 failed: Operation not permitted
-pkill: killing pid 20550 failed: Operation not permitted
-pkill: killing pid 20578 failed: Operation not permitted
-pkill: killing pid 20580 failed: Operation not permitted
-pkill: killing pid 20636 failed: Operation not permitted
-pkill: killing pid 20644 failed: Operation not permitted
-pkill: killing pid 20668 failed: Operation not permitted
-pkill: killing pid 20681 failed: Operation not permitted
-pkill: killing pid 20784 failed: Operation not permitted
+pkill: killing pid 20129 failed: Operation not permitted
 pkill: killing pid 21114 failed: Operation not permitted
-pkill: killing pid 21138 failed: Operation not permitted
-pkill: killing pid 21250 failed: Operation not permitted
-pkill: killing pid 21251 failed: Operation not permitted
-pkill: killing pid 21269 failed: Operation not permitted
 pkill: killing pid 21475 failed: Operation not permitted
 pkill: killing pid 21774 failed: Operation not permitted
 pkill: killing pid 21815 failed: Operation not permitted
@@ -109,14 +111,14 @@ pkill: killing pid 38974 failed: Operation not permitted
 pkill: killing pid 44179 failed: Operation not permitted
 pkill: killing pid 44205 failed: Operation not permitted
 pkill: killing pid 49029 failed: Operation not permitted
-Background pid 21328 is done: terminated by signal 15.
+Background pid 20319 is done: terminated by signal 15.
 :
 :
 :--------------------
 :sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-:Background pid is (21340)
+:Background pid is (20333)
 ::
-Background pid 21340 is done: exit value 0.
+Background pid 20333 is done: exit value 0.
 :
 :--------------------
 :pwd
@@ -133,20 +135,20 @@ Background pid 21340 is done: exit value 0.
 :
 :
 :--------------------
-:mkdir testdir21275
+:mkdir testdir20253
 ::
 :
 :--------------------
-:cd testdir21275
+:cd testdir20253
 ::
 :
 :--------------------
 :pwd (5 points for being in the newly created dir)
-:/nfs/stak/users/passarod/testdir21275
+:/nfs/stak/users/passarod/testdir20253
 :--------------------
 :Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
 :Entering foreground-only mode
-:Tue Feb 25 16:47:03 PST 2020
-::Tue Feb 25 16:47:08 PST 2020
+:Tue Feb 25 16:46:05 PST 2020
+::Tue Feb 25 16:46:10 PST 2020
 :Exiting foreground-only mode
 :

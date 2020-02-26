@@ -3,7 +3,7 @@
 2 kk $$
 3 signals 
 4 kill at exit  
-5 getline (and wait ) interruption restart
+5 kk getline (and wait ) interruption restart
 6 open permissions
  RESTART and the global 
 And to set and an ignore/default in the child */ 
@@ -22,27 +22,37 @@ int execute(char **cmds,int *forkNow,pid_t *pids);
 void shift(pid_t *pids, int idx);
 int checkPids(int *pids);
 void checkStatus(int child);
-void catchSIGINT(int signo);
+void catchSIGTSTP(int signo);
 
 
+//global for catchSTPSIG
+int SIGTSTPBool = 0;//0 is false, greater than 0is true
 
 int main(int argc, char *argv[]){
-  struct sigaction SIGINT_action = {0};//CiTED Lecture
+  struct sigaction SIGINT_action = {0}, SIGTSTP_action = {0};//CiTED Lecture
   SIGINT_action.sa_handler = SIG_IGN;
   sigaction(SIGINT, &SIGINT_action,NULL);
-  /*SIGINT_action.sa_handler = catchSIGINT;
-  sigfillset(&SIGINT_action.sa_mask);
-  SIGINT_action.sa_flags = SA_RESTART;
-  sigaction(SIGINT, &SIGINT_action,NULL);*/
+
+  SIGTSTP_action.sa_handler = catchSIGTSTP;
+  sigfillset(&SIGTSTP_action.sa_mask);
+  SIGTSTP_action.sa_flags = SA_RESTART;
+  sigaction(SIGTSTP, &SIGTSTP_action,NULL);
 
   prompt();
   return 0;
 }
 
-void catchSIGINT(int signo){
-  char *message = "terminated by signal 2\n";
- // write(STDOUT_FILENO, message, 23);
-  
+void catchSIGTSTP(int signo){
+  if (SIGTSTPBool == 0){
+    char *message = "Entering foreground-only mode\n:";
+    write(STDOUT_FILENO, message, 31);
+    SIGTSTPBool=1;
+  }
+  else{
+      char *message = "Exiting foreground-only mode\n:";
+      write(STDOUT_FILENO, message, 30);
+      SIGTSTPBool=0;
+  }
 }
 int prompt(){
   char *getBuf;
@@ -109,6 +119,10 @@ int prompt(){
         }
         memset(cmds[i],'\0',(100));
         strcpy(cmds[i],tok);
+        if(SIGTSTPBool==1 && strcmp(cmds[i],"&")==0){
+          free(cmds[i]);
+          cmds[i]=NULL;
+        }
         //printf(" %s \n",cmds[i]);fflush(stdout);
         tok= strtok(NULL, c);
         cmdsLen++;
@@ -222,11 +236,11 @@ int prompt(){
     else if(( strcmp(getBuf,"exit")==0) ||(strcmp (cmds[0],"exit")==0 && strcmp(cmds[1],"&")==0)){//check for exit (end child processes later)
      // printf("exiting");fflush(stdout);
       free(getBuf);  
-      for (i=0;i<cmdsLen;i++){//reset array and cmdLen
-      if(cmds[i] != NULL){
+       i=0;
+      while(cmds[i]!=NULL){
         free(cmds[i]);
-        cmds[i] =NULL;
-        }
+        cmds[i]=NULL;i++;
+        
       }
       return(0);//add in exit closing bg processes
     }
@@ -236,7 +250,7 @@ int prompt(){
       }
       chdir(getenv("HOME"));//go home
       if(getcwd(cwd,sizeof(cwd)) != NULL){
-      printf("cwd= %s\n",cwd);fflush(stdout);
+      //printf("cwd= %s\n",cwd);fflush(stdout);
       checkPids(pids);
       continue;
       }
@@ -258,7 +272,7 @@ int prompt(){
      // printf("dif dir  %s",cmds[1]);fflush(stdout);
       if(chdir(cmds[1])!=0){perror("chdir failed");}//go to new dir     
       if(getcwd(cwd,sizeof(cwd)) != NULL){
-        printf("cwd= %s\n",cwd);fflush(stdout);
+        //printf("cwd= %s\n",cwd);fflush(stdout);
       }
       checkPids(pids);
 
@@ -342,6 +356,11 @@ void shift(int *pids, int idx){
   }
 }
 
+
+
+
+
+
 int execute(char **cmds,int *forkNow, pid_t * pids){
   //cited lecture code
   int j=0;
@@ -378,6 +397,10 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
       struct sigaction SIGINT_action = {0};//CiTED Lecture
       SIGINT_action.sa_handler = SIG_DFL;
       sigaction(SIGINT, &SIGINT_action,NULL);
+
+      struct sigaction SIGTSTP_action = {0};//CiTED Lecture
+      SIGTSTP_action.sa_handler = SIG_IGN;
+      sigaction(SIGTSTP, &SIGTSTP_action,NULL);
       i=0;
       while(cmds[i] != NULL){//will be null at end of values
        // printf("%s found at i=%d",cmds[i],i);fflush(stdout);
