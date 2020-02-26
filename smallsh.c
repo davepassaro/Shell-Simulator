@@ -434,28 +434,26 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
       }
       *forkNow=0;//flag safe forking
     }//case 0
-    default:{
+    default:{//parent
 
-      if(bg==0){
+      if(bg==0){//foreground
         //block sigtstp before wait
         sigset_t x;
         sigemptyset (&x);
         sigaddset(&x, SIGTSTP);
-        sigprocmask(SIG_BLOCK, &x, NULL);//mask SIGTSTP for wait
+        sigprocmask(SIG_BLOCK, &x, NULL);//block SIGTSTP for wait
         actualPid=waitpid(spawnPid, &childExitStatus,0);
-        sigprocmask(SIG_UNBLOCK, &x, NULL);
+        sigprocmask(SIG_UNBLOCK, &x, NULL);//unblock
       }
-      else if(bg == 1){
-        //actualPid=waitpid(-1, &childExitStatus,WNOHANG);
-        //printf(" bg ");fflush(stdout);
+      else if(bg == 1){//bg set 
         if(pids[0] == NULL){//first process start arr
-          pids[0]=spawnPid;      
+          pids[0]=spawnPid;      //set in list
           printf("Background pid is (%d)\n",spawnPid);fflush(stdout);
         }
         else{//not first process
           i=0;
           while(pids[i] != NULL){
-            if(pids[i+1] == NULL){//if next one is null p
+            if(pids[i+1] == NULL){//if next one is null put in last spot
               pids[i+1] = spawnPid;
               printf("Background pid is (%d) i= %d\n",spawnPid,i);fflush(stdout);
               break;
@@ -464,14 +462,10 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
           }
         }
       }
-      i=0;
-      while(pids[i] != NULL){
-       // printf("Child i= %d is %d\n",i, pids[i]);fflush(stdout);
-        i++;
-      }
+      
     }
   }
   if(bg == 0){
-  return childExitStatus;}
-  //printf("here1");fflush(stdout);
+  return childExitStatus;//return if foreground
+  }
 }
