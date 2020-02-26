@@ -394,9 +394,6 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
     case 0: {//child
      // i=0;while(cmds[i]!=NULL){printf("%s    %d\n", cmds[i],i);fflush(stdout);i++;}
       //set default sig action
-      struct sigaction SIGINT_action = {0};//CiTED Lecture
-      SIGINT_action.sa_handler = SIG_DFL;
-      sigaction(SIGINT, &SIGINT_action,NULL);
 
       struct sigaction SIGTSTP_action = {0};//CiTED Lecture
       SIGTSTP_action.sa_handler = SIG_IGN;
@@ -405,6 +402,9 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
       while(cmds[i] != NULL){//will be null at end of values
        // printf("%s found at i=%d",cmds[i],i);fflush(stdout);
         if(bg==1){
+          struct sigaction SIGINT_action = {0};//CiTED Lecture
+          SIGINT_action.sa_handler = SIG_IGN;
+          sigaction(SIGINT, &SIGINT_action,NULL);
           int targetFD = open("/dev/null", O_WRONLY );//Write only
           result = dup2(targetFD,1);
           if(result == -1){
@@ -417,6 +417,12 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
             perror("ERROR dup2( , 2) failed\n");//fflush(stdout);
             //exit(2);
           }
+        }
+        else{
+          struct sigaction SIGINT_action = {0};//CiTED Lecture
+          SIGINT_action.sa_handler = SIG_DFL;
+          sigaction(SIGINT, &SIGINT_action,NULL);
+
         }
         if(strcmp(cmds[i], ">")==0){//look for output redirect
           //printf("\n%s file to open\n",cmds[i+1]);fflush(stdout);
