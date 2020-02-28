@@ -3,7 +3,6 @@ David Passaro
 Feb 26 2020
 CS344 Winter
 Program 3: smallsh.c
-
 Readme also here
  --compile with--->  gcc -std=gnu99 -g -o smallsh smallsh.c  
    */
@@ -192,7 +191,7 @@ int prompt(){
       }
     }
     i=0;
-    if (getBuf[0]=='#'){//if was comment then check bg list for completions and restart loop (cont)
+    if (getBuf[0]=='#'  || getBuf[0]=='\0' ){//if was comment then check bg list for completions and restart loop (cont)
       checkPids(pids);
       continue;
     }
@@ -365,11 +364,14 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
           result = dup2(targetFD,1);//reroute stdout to null
           if(result == -1){
             perror("ERROR dup2( , 1) failed\n");//fflush(stdout);
+            childExitStatus=1;
           } 
           int targetFD2 = open("/dev/null", O_RDONLY );//reroute sdtin to null
           result = dup2(targetFD2,0);
           if(result == -1){
             perror("ERROR dup2( , 2) failed\n");//fflush(stdout);
+            childExitStatus=1;
+
           }
         }
         else{//foreground
@@ -388,7 +390,7 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
             result = dup2(targetFD,1);
             if(result == -1){//set stdout
               perror("ERROR dup2() failed\n");//fflush(stdout);
-              //exit(2);
+              childExitStatus=1;
             }
           }
         }
@@ -397,12 +399,14 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
           int targetFD = open(cmds[i+1], O_RDONLY );//read only
           if(targetFD== -1){
             printf("ERROR file not opened\n");fflush(stdout);
-            exit(3);
+            childExitStatus=1;
           }
           else{
             result= dup2(targetFD,0);//stdin
             if(result == -1){
               printf("ERROR dup2() failed\n");fflush(stdout);
+              childExitStatus=1;
+
             }
           }
         }
@@ -429,7 +433,7 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
         i=0;
         if (execvp(*cmds, cmds)<0){//exec here
           perror("Exec failure");
-          exit(2);break;
+          exit(1);break;
         }
       }
       *forkNow=0;//flag safe forking
