@@ -1,5 +1,5 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 40662
+  Grading Script PID: 4208
   Note: your smallsh will report a different PID when evaluating $$
 :BEGINNING TEST SCRIPT
 :
@@ -9,9 +9,7 @@ PRE-SCRIPT INFO
 :
 :--------------------
 :ls (10 points for returning dir contents)
-:junk
-junk2
-mytestresults
+:mytestresults
 num
 p3testscript
 README.md
@@ -27,7 +25,6 @@ test
 :--------------------
 :cat junk (15 points for correctly returning contents of junk)
 :junk
-junk2
 mytestresults
 num
 p3testscript
@@ -39,12 +36,12 @@ test
 :
 :--------------------
 :wc in junk (15 points for returning correct numbers from wc)
-: 9  9 75
+: 8  8 69
 :
 :
 :--------------------
 :wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
-:: 9  9 75
+:: 8  8 69
 :
 :
 :--------------------
@@ -55,7 +52,6 @@ test
 :--------------------
 :wc in badfile (10 points for returning text error)
 :ERROR file not opened
-   0    0    0
 :
 :
 :--------------------
@@ -65,37 +61,45 @@ test
 :
 :--------------------
 :sleep 100 background (10 points for returning process ID of sleeper)
-:Background pid is (40737)
+:Background pid is (4267)
 :
 :
 :--------------------
 :pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
 :(Ignore message about Operation Not Permitted)
-:pkill: killing pid 987 failed: Operation not permitted
-pkill: killing pid 7509 failed: Operation not permitted
-pkill: killing pid 7750 failed: Operation not permitted
-pkill: killing pid 8842 failed: Operation not permitted
-pkill: killing pid 8924 failed: Operation not permitted
-pkill: killing pid 9900 failed: Operation not permitted
-pkill: killing pid 10013 failed: Operation not permitted
-pkill: killing pid 17301 failed: Operation not permitted
-pkill: killing pid 31796 failed: Operation not permitted
-pkill: killing pid 33071 failed: Operation not permitted
-pkill: killing pid 36193 failed: Operation not permitted
-pkill: killing pid 39389 failed: Operation not permitted
-pkill: killing pid 39485 failed: Operation not permitted
-pkill: killing pid 39769 failed: Operation not permitted
-pkill: killing pid 41128 failed: Operation not permitted
-pkill: killing pid 41165 failed: Operation not permitted
-pkill: killing pid 43158 failed: Operation not permitted
-Background pid 40737 is done: terminated by signal 15.
+:pkill: killing pid 1244 failed: Operation not permitted
+pkill: killing pid 1494 failed: Operation not permitted
+pkill: killing pid 1677 failed: Operation not permitted
+pkill: killing pid 1886 failed: Operation not permitted
+pkill: killing pid 2244 failed: Operation not permitted
+pkill: killing pid 2618 failed: Operation not permitted
+pkill: killing pid 3836 failed: Operation not permitted
+pkill: killing pid 4006 failed: Operation not permitted
+pkill: killing pid 4080 failed: Operation not permitted
+pkill: killing pid 4235 failed: Operation not permitted
+pkill: killing pid 4246 failed: Operation not permitted
+pkill: killing pid 9899 failed: Operation not permitted
+pkill: killing pid 9910 failed: Operation not permitted
+pkill: killing pid 10801 failed: Operation not permitted
+pkill: killing pid 10837 failed: Operation not permitted
+pkill: killing pid 23574 failed: Operation not permitted
+pkill: killing pid 23585 failed: Operation not permitted
+pkill: killing pid 30702 failed: Operation not permitted
+pkill: killing pid 40841 failed: Operation not permitted
+pkill: killing pid 40852 failed: Operation not permitted
+pkill: killing pid 47987 failed: Operation not permitted
+pkill: killing pid 48086 failed: Operation not permitted
+pkill: killing pid 48277 failed: Operation not permitted
+pkill: killing pid 48320 failed: Operation not permitted
+pkill: killing pid 48986 failed: Operation not permitted
+Background pid 4267 is done: terminated by signal 15.
 :
 :
 :--------------------
 :sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-:Background pid is (40767)
-:Background pid 40767 is done: exit value 0.
-:
+:Background pid is (4281)
+::
+Background pid 4281 is done: exit value 0.
 :
 :--------------------
 :pwd
@@ -112,20 +116,20 @@ Background pid 40737 is done: terminated by signal 15.
 :
 :
 :--------------------
-:mkdir testdir40665
+:mkdir testdir4209
 ::
 :
 :--------------------
-:cd testdir40665
+:cd testdir4209
 ::
 :
 :--------------------
 :pwd (5 points for being in the newly created dir)
-:/nfs/stak/users/passarod/testdir40665
+:/nfs/stak/users/passarod/testdir4209
 :--------------------
 :Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
 :Entering foreground-only mode
-::Thu Feb 27 18:28:23 PST 2020
-::Thu Feb 27 18:28:28 PST 2020
+::Sat Feb 29 21:59:37 PST 2020
+::Sat Feb 29 21:59:42 PST 2020
 :Exiting foreground-only mode
 ::

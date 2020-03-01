@@ -247,8 +247,8 @@ int prompt(){
       checkPids(pids);
       continue;
     }
-    printf("continue?");fflush(stdout);
-  }//while 1 outer      
+    //printf("continue?");fflush(stdout);
+  }////while 1 outer      
   free(getBuf);
   return 0;
 }//main
@@ -365,13 +365,16 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
           if(result == -1){
             perror("ERROR dup2( , 1) failed\n");//fflush(stdout);
             childExitStatus=1;
+            if(bg==0){exit(1);}
+            else{exit(0);}
           } 
           int targetFD2 = open("/dev/null", O_RDONLY );//reroute sdtin to null
           result = dup2(targetFD2,0);
           if(result == -1){
             perror("ERROR dup2( , 2) failed\n");//fflush(stdout);
             childExitStatus=1;
-
+            if(bg==0){exit(1);}
+            else{exit(0);}
           }
         }
         else{//foreground
@@ -383,14 +386,17 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
           outIdx = i;
           int targetFD = open(cmds[i+1], O_WRONLY | O_CREAT | O_TRUNC, 0640);//Write only
           if(targetFD== -1){
-            printf("ERROR file not opened\n");fflush(stdout);
+            fprintf(stderr,"ERROR file not opened\n");fflush(stdout);
             childExitStatus=1;//set status
-            return 1;
+            if(bg==0){exit(1);}
+            else{exit(0);}
           }else{
             result = dup2(targetFD,1);
             if(result == -1){//set stdout
               perror("ERROR dup2() failed\n");//fflush(stdout);
               childExitStatus=1;
+            if(bg==0){exit(1);}
+            else{exit(0);}
             }
           }
         }
@@ -398,15 +404,18 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
           inpIdx = i;
           int targetFD = open(cmds[i+1], O_RDONLY );//read only
           if(targetFD== -1){
-            printf("ERROR file not opened\n");fflush(stdout);
+            fprintf(stderr,"ERROR file not opened\n");fflush(stdout);
             childExitStatus=1;
+            if(bg==0){exit(1);}
+            else{exit(0);}
           }
           else{
             result= dup2(targetFD,0);//stdin
             if(result == -1){
-              printf("ERROR dup2() failed\n");fflush(stdout);
+              fprintf(stderr,"ERROR dup2() failed\n");fflush(stdout);
               childExitStatus=1;
-
+              if(bg==0){exit(1);}
+              else{exit(0);}
             }
           }
         }
@@ -433,7 +442,9 @@ int execute(char **cmds,int *forkNow, pid_t * pids){
         i=0;
         if (execvp(*cmds, cmds)<0){//exec here
           perror("Exec failure");
-          exit(1);break;
+            if(bg==0){exit(1);}
+            else{exit(0);}
+            break;
         }
       }
       *forkNow=0;//flag safe forking
